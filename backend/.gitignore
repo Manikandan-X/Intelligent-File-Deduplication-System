@@ -1,0 +1,148 @@
+# =========================
+
+# Git
+
+# =========================
+
+.git/
+
+
+# =========================
+
+# Environment / Secrets
+
+# =========================
+
+.env
+.env.*
+!.env.example
+
+# =========================
+
+# Python cache
+
+# =========================
+
+__pycache__/
+*.py[cod]
+*.pyo
+
+# =========================
+
+# Virtual environments
+
+# =========================
+
+.venv/
+venv/
+env/
+ENV/
+
+# =========================
+
+# Pytest / Coverage
+
+# =========================
+
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.pyre/
+.mypy_cache/
+.ruff_cache/
+
+# =========================
+
+# Alembic
+
+# =========================
+
+# Keep migration files tracked.
+
+# Do NOT ignore app/alembic/versions/
+
+# =========================
+
+# IDE / Editor
+
+# =========================
+
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# =========================
+
+# OS files
+
+# =========================
+
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =========================
+
+# Logs
+
+# =========================
+
+*.log
+logs/
+
+# =========================
+
+# Temporary files
+
+# =========================
+
+*.tmp
+*.temp
+*.bak
+
+# =========================
+
+# Build / Distribution
+
+# =========================
+
+build/
+dist/
+*.egg-info/
+
+# =========================
+
+# Database files
+
+# =========================
+
+*.db
+*.sqlite
+*.sqlite3
+
+# =========================
+
+# Docker local files
+
+# =========================
+
+docker-data/
+docker-volumes/
+
+# =========================
+
+# Test reports
+
+# =========================
+
+test-results/
+coverage.xml
+junit.xml
+
+# =========================
+# Uploaded files
+# =========================
+
+storage/
