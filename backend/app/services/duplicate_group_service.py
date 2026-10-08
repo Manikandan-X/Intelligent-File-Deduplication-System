@@ -4,8 +4,9 @@ from app.core.exceptions import NotFoundException
 from app.models.duplicate_group import DuplicateGroup
 from app.models.file import File
 from app.repositories.duplicate_group_repository import (
-DuplicateGroupRepository,
+    DuplicateGroupRepository,
 )
+
 
 class DuplicateGroupService:
 
@@ -15,9 +16,13 @@ class DuplicateGroupService:
     def get_all_duplicate_groups(
         self,
         db: Session,
+        *,
+        user_id: int,
+        is_admin: bool = False,
     ) -> list[DuplicateGroup]:
         return self.duplicate_group_repository.get_all(
             db,
+            user_id=None if is_admin else user_id,
         )
 
     def get_duplicate_group(
@@ -25,11 +30,14 @@ class DuplicateGroupService:
         db: Session,
         *,
         group_id: int,
+        user_id: int,
+        is_admin: bool = False,
     ) -> DuplicateGroup:
         duplicate_group = (
             self.duplicate_group_repository.get_by_id(
                 db,
                 group_id=group_id,
+                user_id=None if is_admin else user_id,
             )
         )
 
@@ -45,11 +53,14 @@ class DuplicateGroupService:
         db: Session,
         *,
         content_hash: str,
+        user_id: int,
+        is_admin: bool = False,
     ) -> DuplicateGroup:
         duplicate_group = (
             self.duplicate_group_repository.get_by_content_hash(
                 db,
                 content_hash=content_hash,
+                user_id=None if is_admin else user_id,
             )
         )
 
@@ -67,8 +78,17 @@ class DuplicateGroupService:
         group_id: int,
         user_id: int | None = None,
     ) -> list[File]:
-        """user_id=None (admin) returns all members; otherwise only the caller's files."""
-        duplicate_group = self.get_duplicate_group(db, group_id=group_id)
+        """
+        user_id=None (admin) returns all members;
+        otherwise only the caller's files.
+        """
+        duplicate_group = self.get_duplicate_group(
+            db,
+            group_id=group_id,
+            user_id=user_id if user_id is not None else 0,
+            is_admin=user_id is None,
+        )
+
         return self.duplicate_group_repository.get_member_files(
             db,
             content_hash=duplicate_group.content_hash,

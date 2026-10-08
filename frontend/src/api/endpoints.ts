@@ -1,6 +1,6 @@
 import { api } from "./client";
 import type {
-  AnalyticsOverview, AuditLog, DuplicateGroup, FileItem, FileListResult, FileQuery, Paginated, User,
+  AnalyticsOverview, AuditLog, DeletionRecord, DuplicateGroup, FileItem, FileListResult, FileQuery, Paginated, User,
 } from "../types";
 
 /* ---------- Auth ---------- */
@@ -69,6 +69,9 @@ export const deleteFile = async (id: number, deletion_reason?: string) =>
 
 export const setProtection = async (id: number, is_protected: boolean) =>
   (await api.patch<FileItem>(`/files/${id}/protection`, null, { params: { is_protected } })).data;
+
+/** Admins receive every user's deletions, other users only their own (scoped by the backend). */
+export const listDeletionHistory = async () => (await api.get<DeletionRecord[]>("/files/deletion-history")).data;
 
 /* ---------- Duplicate groups ---------- */
 export const listGroups = async () => (await api.get<DuplicateGroup[]>("/duplicate-groups/")).data;

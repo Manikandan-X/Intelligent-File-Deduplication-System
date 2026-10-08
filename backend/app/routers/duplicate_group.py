@@ -40,6 +40,8 @@ def get_all_duplicate_groups(
     ):
     return duplicate_group_service.get_all_duplicate_groups(
     db,
+    user_id=current_user.id, 
+    is_admin=current_user.role.name == "Admin",
     )
 
 @router.get(
@@ -58,8 +60,10 @@ def get_duplicate_group_by_hash(
     ],
     ):
     return duplicate_group_service.get_duplicate_group_by_hash(
-    db,
-    content_hash=content_hash,
+        db,
+        content_hash=content_hash,
+        user_id=current_user.id,
+        is_admin=current_user.role.name == "Admin",
     )
 
 @router.get(
@@ -78,32 +82,37 @@ def get_duplicate_group(
     ],
     ):
     return duplicate_group_service.get_duplicate_group(
-    db,
-    group_id=group_id,
+        db,
+        group_id=group_id,
+        user_id=current_user.id,
+        is_admin=current_user.role.name == "Admin",
     )
 
 @router.get(
-"/{group_id}/files",
-response_model=list[FileResponse],
+    "/{group_id}/files",
+    response_model=list[FileResponse],
 )
 def get_duplicate_group_files(
     group_id: int,
     current_user: Annotated[
-    User,
-    Depends(get_current_user),
+        User,
+        Depends(get_current_user),
     ],
     db: Annotated[
-    Session,
-    Depends(get_db),
+        Session,
+        Depends(get_db),
     ],
-    ):
+):
     """
     Files in a duplicate group (original included).
-    Admins see every member; other users only see their own files.
+
+    Admins see every member;
+    other users only see their own files.
     """
     is_admin = current_user.role.name == "Admin"
+
     return duplicate_group_service.get_group_files(
-    db,
-    group_id=group_id,
-    user_id=None if is_admin else current_user.id,
+        db,
+        group_id=group_id,
+        user_id=None if is_admin else current_user.id,
     )

@@ -13,6 +13,7 @@ import type { DuplicateGroup, FileItem } from "../types";
 import { errorMessage, formatBytes, formatDate, percent } from "../utils/format";
 import { palette } from "../theme";
 import { useNotify } from "../context/NotifyContext";
+import { useAuth } from "../context/AuthContext";
 import PageHeader from "../components/PageHeader";
 import StatCard from "../components/StatCard";
 import StorageBar from "../components/StorageBar";
@@ -29,6 +30,7 @@ type SortKey = "potential_savings" | "total_size" | "duplicate_count" | "created
 
 export default function DuplicateGroupsPage() {
   const notify = useNotify();
+  const { isAdmin } = useAuth();
   const index = useDuplicateIndex();
   const [sortKey, setSortKey] = useState<SortKey>("potential_savings");
   const [hashQuery, setHashQuery] = useState("");
@@ -139,11 +141,11 @@ export default function DuplicateGroupsPage() {
                       <Stack direction="row" spacing={1} alignItems="center">
                         <Chip size="small" label="Original" sx={{ bgcolor: `${palette.original}22`, color: palette.original }} />
                         <Typography fontWeight={700} noWrap title={orig?.original_filename}>
-                          {orig === undefined ? <Skeleton width={160} /> : orig?.original_filename ?? `File #${g.original_file_id}`}
+                          {orig === undefined ? <Skeleton width={160} /> : orig?.original_filename ?? (isAdmin ? `File #${g.original_file_id}` : "Original owned by another user")}
                         </Typography>
                       </Stack>
                       <Typography variant="body2" color="text.secondary" noWrap>
-                        {orig ? `${formatBytes(orig.file_size)} · uploaded ${formatDate(orig.created_at)}` : "Details unavailable"} · hash {g.content_hash.slice(0, 10)}…
+                        {orig ? `${formatBytes(orig.file_size)} · uploaded ${formatDate(orig.created_at)}` : "Original details are private"} · hash {g.content_hash.slice(0, 10)}…
                       </Typography>
                     </Box>
                   </Stack>
@@ -179,6 +181,9 @@ export default function DuplicateGroupsPage() {
                         <Alert severity="info" sx={{ m: 2 }}>
                           Only the original file can be shown. Add the backend patch (GET /duplicate-groups/&#123;id&#125;/files) to list every duplicate copy here.
                         </Alert>
+                      )}
+                      {!m.partial && !m.files.some((f) => f.id === g.original_file_id) && (
+                        <Alert severity="info" sx={{ m: 2 }}>The original copy belongs to another user, so only your own duplicates are listed.</Alert>
                       )}
                       <Table size="small">
                         <TableHead>

@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from app.dependencies.auth import get_current_user
 from app.db.session import get_db
 from app.models.user import User
-from app.schemas.file import FileResponse
+from app.schemas.file import FileResponse, DeletionHistoryResponse
 from app.services.file_service import FileService
 
 
@@ -111,6 +111,21 @@ def list_files(
     response.headers["X-Total-Count"] = str(total)
 
     return files
+
+
+@router.get(
+    "/deletion-history",
+    response_model=list[DeletionHistoryResponse],
+)
+def get_deletion_history(
+    current_user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[Session, Depends(get_db)],
+):
+    return file_service.get_deletion_history(
+        db,
+        current_user_id=current_user.id,
+        is_admin=current_user.role.name == "Admin",
+    )
 
 
 @router.get(

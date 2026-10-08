@@ -5,8 +5,8 @@ from app.models.duplicate_group import DuplicateGroup
 from app.models.file import File
 from app.models.file_hash import FileHash
 
-class DuplicateGroupRepository:
 
+class DuplicateGroupRepository:
 
     def create(
         self,
@@ -34,11 +34,34 @@ class DuplicateGroupRepository:
     def get_all(
         self,
         db: Session,
+        *,
+        user_id: int | None = None,
     ) -> list[DuplicateGroup]:
         statement = (
             select(DuplicateGroup)
             .order_by(DuplicateGroup.created_at.desc())
         )
+
+        if user_id is not None:
+            statement = (
+                select(DuplicateGroup)
+                .join(
+                    FileHash,
+                    FileHash.content_hash
+                    == DuplicateGroup.content_hash,
+                )
+                .join(
+                    File,
+                    File.id == FileHash.file_id,
+                )
+                .where(
+                    File.user_id == user_id,
+                    File.is_deleted.is_(False),
+                    FileHash.hash_algorithm == "sha256",
+                )
+                .distinct()
+                .order_by(DuplicateGroup.created_at.desc())
+            )
 
         return list(
             db.scalars(statement).all()
@@ -49,10 +72,30 @@ class DuplicateGroupRepository:
         db: Session,
         *,
         content_hash: str,
+        user_id: int | None = None,
     ) -> DuplicateGroup | None:
         statement = select(DuplicateGroup).where(
             DuplicateGroup.content_hash == content_hash,
         )
+
+        if user_id is not None:
+            statement = (
+                statement
+                .join(
+                    FileHash,
+                    FileHash.content_hash
+                    == DuplicateGroup.content_hash,
+                )
+                .join(
+                    File,
+                    File.id == FileHash.file_id,
+                )
+                .where(
+                    File.user_id == user_id,
+                    File.is_deleted.is_(False),
+                    FileHash.hash_algorithm == "sha256",
+                )
+            )
 
         return db.scalar(statement)
 
@@ -61,10 +104,30 @@ class DuplicateGroupRepository:
         db: Session,
         *,
         group_id: int,
+        user_id: int | None = None,
     ) -> DuplicateGroup | None:
         statement = select(DuplicateGroup).where(
             DuplicateGroup.id == group_id,
         )
+
+        if user_id is not None:
+            statement = (
+                statement
+                .join(
+                    FileHash,
+                    FileHash.content_hash
+                    == DuplicateGroup.content_hash,
+                )
+                .join(
+                    File,
+                    File.id == FileHash.file_id,
+                )
+                .where(
+                    File.user_id == user_id,
+                    File.is_deleted.is_(False),
+                    FileHash.hash_algorithm == "sha256",
+                )
+            )
 
         return db.scalar(statement)
 
@@ -94,11 +157,16 @@ class DuplicateGroupRepository:
     ) -> list[File]:
         """
         Active files whose SHA-256 matches the group's content hash.
-        user_id=None returns every member (admin); otherwise only that user's files.
+
+        user_id=None returns every member (admin);
+        otherwise only that user's files.
         """
         statement = (
             select(File)
-            .join(FileHash, FileHash.file_id == File.id)
+            .join(
+                FileHash,
+                FileHash.file_id == File.id,
+            )
             .where(
                 FileHash.content_hash == content_hash,
                 FileHash.hash_algorithm == "sha256",
@@ -106,6 +174,12 @@ class DuplicateGroupRepository:
             )
             .order_by(File.created_at.asc())
         )
+
         if user_id is not None:
-            statement = statement.where(File.user_id == user_id)
-        return list(db.scalars(statement).all())
+            statement = statement.where(
+                File.user_id == user_id
+            )
+
+        return list(
+            db.scalars(statement).all()
+        )

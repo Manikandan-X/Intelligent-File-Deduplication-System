@@ -275,6 +275,24 @@ class FileService:
             sort_by=sort_by,
             sort_order=sort_order,
         )
+        
+    
+    def get_deletion_history(
+        self,
+        db: Session,
+        *,
+        current_user_id: int,
+        is_admin: bool = False,
+    ) -> list[DeletionHistory]:
+        if is_admin:
+            return self.deletion_history_repository.get_all(db)
+
+        return self.deletion_history_repository.get_by_user_id(
+            db,
+            user_id=current_user_id,
+        )
+
+
 
     def delete_file(
         self,

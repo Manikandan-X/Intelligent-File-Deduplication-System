@@ -90,14 +90,14 @@ export default function Layout() {
   return (
     <Box sx={{ display: "flex", minHeight: "100%" }}>
       {desktop ? (
-        <Drawer variant="permanent" sx={{ width: WIDTH, "& .MuiDrawer-paper": { width: WIDTH, border: 0 } }}>{drawer}</Drawer>
+        <Drawer variant="permanent" sx={{ width: WIDTH, flexShrink: 0, "& .MuiDrawer-paper": { width: WIDTH, border: 0 } }}>{drawer}</Drawer>
       ) : (
         <Drawer open={mobileOpen} onClose={() => setMobileOpen(false)} sx={{ "& .MuiDrawer-paper": { width: WIDTH, border: 0 } }}>
           {drawer}
         </Drawer>
       )}
 
-      <Box sx={{ flex: 1, minWidth: 0, ml: desktop ? `${WIDTH}px` : 0 }}>
+      <Box sx={{ flex: 1, minWidth: 0 }}>
         <AppBar position="sticky" color="inherit" elevation={0} sx={{ bgcolor: "rgba(242,246,247,.9)", backdropFilter: "blur(8px)", borderBottom: `1px solid ${palette.line}` }}>
           <Toolbar sx={{ gap: 1 }}>
             {!desktop && (
@@ -119,7 +119,7 @@ export default function Layout() {
             </Menu>
           </Toolbar>
         </AppBar>
-        <Box component="main" sx={{ p: { xs: 2, md: 4 }, maxWidth: 1400, mx: "auto" }}>
+        <Box component="main" sx={{ p: { xs: 2, md: 3.5 }, maxWidth: 1500, mx: "auto" }}>
           <Outlet />
         </Box>
       </Box>

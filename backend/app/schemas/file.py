@@ -18,6 +18,21 @@ class FileResponse(BaseModel):
     model_config = ConfigDict(
         from_attributes=True,
     )
+    
+class DeletionHistoryResponse(BaseModel):
+    id: int
+    file_id: int
+    user_id: int | None
+    original_filename: str
+    file_size: int
+    deletion_reason: str | None
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(
+        from_attributes=True,
+    )
+
 
 
 class FileSearchParams(BaseModel):

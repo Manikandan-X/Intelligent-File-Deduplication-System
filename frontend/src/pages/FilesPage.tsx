@@ -194,7 +194,7 @@ export default function FilesPage() {
                 {sortHead("file_size", "Size", "right")}
                 {sortHead("created_at", "Uploaded")}
                 <TableCell>Status</TableCell>
-                <TableCell align="right">Actions</TableCell>
+                <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -206,24 +206,24 @@ export default function FilesPage() {
                     <TableCell>
                       <Stack direction="row" spacing={1.5} alignItems="center">
                         <FileTypeIcon name={f.original_filename} mime={f.mime_type} />
-                        <Typography fontWeight={600} noWrap sx={{ maxWidth: 320 }} title={f.original_filename}>{f.original_filename}</Typography>
+                        <Typography fontWeight={600} noWrap sx={{ maxWidth: { xs: 180, md: 300, xl: 420 } }} title={f.original_filename}>{f.original_filename}</Typography>
                       </Stack>
                     </TableCell>
-                    <TableCell>{fileKind(f.original_filename, f.mime_type).label}</TableCell>
-                    <TableCell align="right" sx={{ fontVariantNumeric: "tabular-nums" }}>{formatBytes(f.file_size)}</TableCell>
-                    <TableCell>{formatDate(f.created_at)}</TableCell>
+                    <TableCell sx={{ whiteSpace: "nowrap" }}>{fileKind(f.original_filename, f.mime_type).label}</TableCell>
+                    <TableCell align="right" sx={{ fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>{formatBytes(f.file_size)}</TableCell>
+                    <TableCell sx={{ whiteSpace: "nowrap" }}>{formatDate(f.created_at)}</TableCell>
                     <TableCell>
                       <Stack direction="row" spacing={0.75}>
                         {!index.loading && <Chip size="small" label={ks.label} sx={{ bgcolor: `${ks.color}22`, color: ks.color }} />}
                         {f.is_protected && <Chip size="small" icon={<LockIcon />} label="Protected" />}
                       </Stack>
                     </TableCell>
-                    <TableCell align="right" onClick={(e) => e.stopPropagation()}>
-                      <Tooltip title="Details"><IconButton aria-label="View details" onClick={() => setSelected(f)}><InfoIcon /></IconButton></Tooltip>
-                      <Tooltip title="Download"><IconButton aria-label="Download" onClick={() => onDownload(f)}><DownloadIcon /></IconButton></Tooltip>
+                    <TableCell align="right" sx={{ whiteSpace: "nowrap" }} onClick={(e) => e.stopPropagation()}>
+                      <Tooltip title="Details"><IconButton size="small" aria-label="View details" onClick={() => setSelected(f)}><InfoIcon /></IconButton></Tooltip>
+                      <Tooltip title="Download"><IconButton size="small" aria-label="Download" onClick={() => onDownload(f)}><DownloadIcon /></IconButton></Tooltip>
                       <Tooltip title={f.is_protected ? "Protected files cannot be deleted" : "Delete"}>
                         <span>
-                          <IconButton aria-label="Delete" color="error" disabled={f.is_protected} onClick={() => setToDelete(f)}><DeleteIcon /></IconButton>
+                          <IconButton size="small" aria-label="Delete" color="error" disabled={f.is_protected} onClick={() => setToDelete(f)}><DeleteIcon /></IconButton>
                         </span>
                       </Tooltip>
                     </TableCell>

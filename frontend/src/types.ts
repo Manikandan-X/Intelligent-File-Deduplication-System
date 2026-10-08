@@ -74,6 +74,17 @@ export interface AuditLog {
   updated_at: string;
 }
 
+export interface DeletionRecord {
+  id: number;
+  file_id: number;
+  user_id: number | null;
+  original_filename: string;
+  file_size: number;
+  deletion_reason: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Paginated<T> {
   items: T[];
   total: number;
